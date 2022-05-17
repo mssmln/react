@@ -569,8 +569,8 @@ class MyComponent3 extends React.Component {
       name: 'Initial State'
     };
     /*
-explicitly bind this in the constructor so this becomes bound to the class methods when the component is initialized.
-
+    explicitly bind this in the constructor so this becomes 
+    bound to the class methods when the component is initialized.
     */
     this.click = this.handleClick.bind(this);
   }
@@ -738,7 +738,7 @@ class MyForm extends React.Component {
     });
   }
   handleSubmit(event) {
-    //to prevent the default form submit behavior which will refresh the web page. 
+    // to prevent the default form submit behavior which will refresh the web page. 
     event.preventDefault();
     this.setState(state => ({
       submit: state.input 
@@ -876,3 +876,413 @@ class RenderInput extends React.Component {
   }
 };
 ReactDOM.render(<MyApp1 />, document.getElementById('Pass_a_Callback_as_Props'));
+
+
+// ------------------------------------------------------------------
+
+
+class MyComponent5 extends React.Component {
+  // constructor(props) {
+  //   super(props);
+  // }
+  /*
+  React components have several special methods that provide 
+  opportunities to perform actions at specific points in the 
+  lifecycle of a component. These are called lifecycle methods, 
+  or lifecycle hooks, and allow you to catch components at certain 
+  points in time. This can be before they are rendered, before 
+  they update, before they receive props, before they unmount, and so on.
+  */
+  componentWillMount() {
+    console.log("hello, this is a console log")
+  }
+  render() {
+    return <div />
+  }
+};
+ReactDOM.render(<MyComponent5 />, document.getElementById('Use_the_Lifecycle_Method_componentWillMount'));
+
+
+// ------------------------------------------------------------------
+
+class MyComponent6 extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      activeUsers: null
+    };
+  }
+  /*
+  The best practice with React is to place API calls 
+  or any calls to your server in the lifecycle method 
+  componentDidMount(). This method is called after a component 
+  is mounted to the DOM. Any calls to setState() here will 
+  trigger a re-rendering of your component. When you call 
+  an API in this method, and set your state with the data 
+  that the API returns, it will automatically trigger an 
+  update once you receive the data.
+  */
+  componentDidMount() {
+    setTimeout(() => {
+      this.setState({
+        activeUsers: 12738
+      });
+    }, 2000);
+  }
+  render() {
+    return (
+      <div>
+        <h1>Active Users: {this.state.activeUsers}</h1>
+      </div>
+    );
+  }
+}
+ReactDOM.render(<MyComponent6 />, document.getElementById('Use_the_Lifecycle_Method_componentDidMount'));
+
+
+// ------------------------------------------------------------------
+
+
+class MyComponent7 extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      message: ''
+    };
+    this.handleEnter = this.handleEnter.bind(this);
+    this.handleKeyPress = this.handleKeyPress.bind(this);
+  }
+  /*
+  The componentDidMount() method is also the best place 
+  to attach any event listeners you need to add for 
+  specific functionality. React provides a synthetic 
+  event system which wraps the native event system 
+  present in browsers. This means that the synthetic event 
+  system behaves exactly the same regardless of the user's 
+  browser - even if the native events may behave differently 
+  between different browsers.
+  */
+  componentDidMount() {
+    document.addEventListener("keydown", this.handleKeyPress)
+  }
+  componentWillUnmount() {
+    document.removeEventListener("keydown", this.handleKeyPress)
+  }
+  handleEnter() {
+    this.setState(state => ({
+      message: state.message + 'You pressed the enter key! '
+    }));
+  }
+  handleKeyPress(event) {
+    if (event.keyCode === 13) {
+      this.handleEnter();
+    }
+  }
+  render() {
+    return (
+      <div>
+        <h1>{this.state.message}</h1>
+      </div>
+    );
+  }
+};
+ReactDOM.render(<MyComponent7 />, document.getElementById('Add_Event_Listeners'));
+
+
+// ------------------------------------------------------------------
+
+class OnlyEvens extends React.Component {
+  // constructor(props) {
+  //   super(props);
+  // }
+  /*
+  So far, if any component receives new state or new props, 
+  it re-renders itself and all its children. This is usually okay. 
+  But React provides a lifecycle method you can call when 
+  child components receive new state or props, and declare 
+  specifically if the components should update or not. 
+  The method is shouldComponentUpdate(), and it takes 
+  nextProps and nextState as parameters.
+
+  This method is a useful way to optimize performance. 
+  For example, the default behavior is that your component 
+  re-renders when it receives new props, even if the props 
+  haven't changed. You can use shouldComponentUpdate() to 
+  prevent this by comparing the props. The method must return 
+  a boolean value that tells React whether or not to update the component.
+  */
+  shouldComponentUpdate(nextProps, nextState) {
+    console.log('Should I update?');
+    return nextProps.value % 2 === 0;
+  }
+  componentDidUpdate() {
+    console.log('Component re-rendered.');
+  }
+  render() {
+    return <h1>{this.props.value}</h1>;
+  }
+}
+
+class Controller extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      value: 0
+    };
+    this.addValue = this.addValue.bind(this);
+  }
+  addValue() {
+    this.setState(state => ({
+      value: state.value + 1
+    }));
+  }
+  render() {
+    return (
+      <div>
+        <button onClick={this.addValue}>Add</button>
+        <OnlyEvens value={this.state.value} />
+      </div>
+    );
+  }
+}
+ReactDOM.render(<Controller />, document.getElementById('Optimize_Re-Renders_with_shouldComponentUpdate'));
+
+
+// ------------------------------------------------------------------
+
+class Colorful extends React.Component {
+  render() {
+    return (
+      <div style={{color: "red", fontSize: 72}}>Big Red</div>
+    );
+  }
+};
+ReactDOM.render(<Colorful />, document.getElementById('Introducing_Inline_Styles'));
+
+
+// ------------------------------------------------------------------
+
+const styles = {
+  color: "purple", 
+  fontSize: 40, 
+  border: "1em solid purple"
+};
+class Colorful1 extends React.Component {
+  render() {
+    return (
+      <div style={styles}>Style Me!</div>
+    );
+  }
+};
+ReactDOM.render(<Colorful1 />, document.getElementById('Add_Inline_Styles_in_React'));
+
+
+// ------------------------------------------------------------------
+
+const inputStyle = {
+  width: 235,
+  margin: 5
+};
+
+class MagicEightBall extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      userInput: '',
+      randomIndex: ''
+    };
+    this.ask = this.ask.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+  }
+  ask() {
+    if (this.state.userInput) {
+      this.setState({
+        randomIndex: Math.floor(Math.random() * 20),
+        userInput: ''
+      });
+    }
+  }
+  handleChange(event) {
+    this.setState({
+      userInput: event.target.value
+    });
+  }
+  render() {
+    /*
+    You can also write JavaScript directly in 
+    your render methods, before the return statement, 
+    without inserting it inside of curly braces. 
+    This is because it is not yet within the JSX code. 
+    When you want to use a variable later in the JSX code 
+    inside the return statement, you place the variable name inside curly braces.
+    */
+    const possibleAnswers = [
+      'It is certain',
+      'It is decidedly so',
+      'Without a doubt',
+      'Yes, definitely',
+      'You may rely on it',
+      'As I see it, yes',
+      'Outlook good',
+      'Yes',
+      'Signs point to yes',
+      'Reply hazy try again',
+      'Ask again later',
+      'Better not tell you now',
+      'Cannot predict now',
+      'Concentrate and ask again',
+      "Don't count on it",
+      'My reply is no',
+      'My sources say no',
+      'Most likely',
+      'Outlook not so good',
+      'Very doubtful'
+    ];
+    const answer = possibleAnswers[this.state.randomIndex]; 
+    return (
+      <div>
+        <input
+          type='text'
+          value={this.state.userInput}
+          onChange={this.handleChange}
+          style={inputStyle}
+        />
+        <br />
+        <button onClick={this.ask}>Ask the Magic Eight Ball!</button>
+        <br />
+        <h3>Answer:</h3>
+        <p>{answer}</p>
+      </div>
+    );
+  }
+}
+ReactDOM.render(<MagicEightBall />, document.getElementById('Use_Advanced_JavaScript_in_React_Render_Method'));
+
+
+// ------------------------------------------------------------------
+
+class MyComponent8 extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      display: true
+    }
+    this.toggleDisplay = this.toggleDisplay.bind(this);
+  }
+  toggleDisplay() {
+    this.setState(state => ({
+      display: !state.display
+    }));
+  }
+  render() {
+    if (this.state.display) {
+      return (
+        <div>
+          <button onClick={this.toggleDisplay}>Toggle Display</button>
+          <h1>Displayed!</h1>
+        </div>
+      );
+    } else {
+        return (
+          <div>
+            <button onClick={this.toggleDisplay}>Toggle Display</button>
+          </div>
+        );
+    }
+  }
+};
+ReactDOM.render(<MyComponent8 />, document.getElementById('Render_with_an_If-Else_Condition'));
+
+
+// ------------------------------------------------------------------
+
+class MyComponent9 extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      display: true
+    }
+    this.toggleDisplay = this.toggleDisplay.bind(this);
+  }
+  toggleDisplay() {
+    this.setState(state => ({
+      display: !state.display
+    }));
+  }
+  render() {
+    return (
+      <div>
+        <button onClick={this.toggleDisplay}>Toggle Display</button>
+        {/*
+        The if/else statements worked in the last challenge, 
+        but there's a more concise way to achieve the same result.
+        You can use the && logical operator to perform 
+        conditional logic in a more concise way.
+        */}
+        {this.state.display && <h1>Displayed!</h1>}
+      </div>
+    );
+  }
+};
+ReactDOM.render(<MyComponent9 />, document.getElementById('Use_&&_for_a_More_Concise_Conditional'));
+
+
+// ------------------------------------------------------------------
+
+
+const inputStyle1 = {
+  width: 235,
+  margin: 5
+};
+
+class CheckUserAge extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      input: '',
+      userAge: ''
+    }
+    this.submit = this.submit.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+  }
+  handleChange(e) {
+    this.setState({
+      input: e.target.value,
+      userAge: ''
+    });
+  }
+  submit() {
+    this.setState(state => ({
+      userAge: state.input
+    }));
+  }
+  render() {
+    const buttonOne = <button onClick={this.submit}>Submit</button>;
+    const buttonTwo = <button>You May Enter</button>;
+    const buttonThree = <button>You Shall Not Pass</button>;
+    return (
+      <div>
+        <h3>Enter Your Age to Continue</h3>
+        <input
+          style={inputStyle1}
+          type='number'
+          value={this.state.input}
+          onChange={this.handleChange}
+        />
+        <br />
+        {/*
+        if/else statements can't be inserted directly into JSX code.
+        Ternary expressions can be an excellent alternative if 
+        you want to implement conditional logic within your JSX.
+        */}
+        {this.state.userAge === ''
+          ? buttonOne
+          : this.state.userAge >= 18
+            ? buttonTwo
+            : buttonThree
+        }
+      </div>
+    );
+  }
+}
+ReactDOM.render(<CheckUserAge />, document.getElementById('Use_a_Ternary_Expression_for_Conditional_Rendering'));
