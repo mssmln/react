@@ -21,7 +21,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
-
+import ReactDOMServer from 'react-dom/server';
 
 
 const JSX = <h1>Hello JSX!</h1>;
@@ -1286,3 +1286,259 @@ class CheckUserAge extends React.Component {
   }
 }
 ReactDOM.render(<CheckUserAge />, document.getElementById('Use_a_Ternary_Expression_for_Conditional_Rendering'));
+
+// ------------------------------------------------------------------
+
+class Results extends React.Component {
+  // constructor(props) {
+  //   super(props);
+  // }
+  render() {
+    return <h1>{this.props.fiftyFifty}</h1>; // alternative {this.props.fiftyFifty ? "You Win!" : "You Lose!"}
+  }
+}
+
+class GameOfChance extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      counter: 1
+    };
+    this.handleClick = this.handleClick.bind(this);
+  }
+  handleClick() {
+    this.setState(prevState => {
+      return {
+        counter: prevState.counter +1
+      }
+    });
+  }
+  render() {
+    const expression = Math.random() >= .5; 
+    return (
+      <div>
+        <button onClick={this.handleClick}>Play Again</button>
+        {/*
+        Using props to conditionally render code is very common 
+        with React developers — that is, they use the value of a 
+        given prop to automatically make decisions about what to render.
+        */}
+        {/* alternative fiftyFifty={expression} */}
+        <Results fiftyFifty={expression ? "You Win!" : "You Lose!"}/>
+        <p>{'Turn: ' + this.state.counter}</p>
+      </div>
+    );
+  }
+}
+ReactDOM.render(<GameOfChance />, document.getElementById('Render_Conditionally_from_Props'));
+
+// ------------------------------------------------------------------
+
+class GateKeeper extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      input: ''
+    };
+    this.handleChange = this.handleChange.bind(this);
+  }
+  handleChange(event) {
+    this.setState({ input: event.target.value })
+  }
+  render() {
+    let inputStyle = {
+      border: '1px solid black'
+    };
+    /*
+    This paradigm is important to understand because 
+    it is a dramatic shift from the more traditional 
+    approach of applying styles by modifying DOM elements 
+    directly (which is very common with jQuery, for example). 
+    In that approach, you must keep track of when elements 
+    change and also handle the actual manipulation directly. 
+    It can become difficult to keep track of changes, potentially 
+    making your UI unpredictable. When you set a style object based 
+    on a condition, you describe how the UI should look as a function 
+    of the application's state. There is a clear flow of information 
+    that only moves in one direction. This is the preferred method 
+    when writing applications with React.
+    */
+    if (this.state.input.length > 15) {
+      inputStyle.border = '3px solid red'
+    } 
+    return (
+      <div>
+        <h3>Don't Type Too Much:</h3>
+        <input
+          type="text"
+          style={inputStyle}
+          value={this.state.input}
+          onChange={this.handleChange} />
+      </div>
+    );
+  }
+};
+ReactDOM.render(<GateKeeper />, document.getElementById('Change_Inline_CSS_Conditionally_Based_on_Component_State'));
+
+// ------------------------------------------------------------------
+
+const textAreaStyles = {
+  width: 235,
+  margin: 5
+};
+
+class MyToDoList extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      userInput: '',
+      toDoList: []
+    }
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+  }
+  handleSubmit() {
+    const itemsArray = this.state.userInput.split(',');
+    this.setState({
+      toDoList: itemsArray
+    });
+  }
+  handleChange(e) {
+    this.setState({
+      userInput: e.target.value
+    });
+  }
+  render() {
+    const items = this.state.toDoList.map(el => <li>{el}</li>); 
+    return (
+      <div>
+        <textarea
+          onChange={this.handleChange}
+          value={this.state.userInput}
+          style={textAreaStyles}
+          placeholder='Separate Items With Commas'
+        />
+        <br />
+        <button onClick={this.handleSubmit}>Create List</button>
+        <h1>My "To Do" List:</h1>
+        <ul>{items}</ul>
+      </div>
+    );
+  }
+}
+ReactDOM.render(<MyToDoList />, document.getElementById('Use_Array.map()_to_Dynamically_Render_Elements'));
+
+// ------------------------------------------------------------------
+
+const frontEndFrameworks = [
+  'React',
+  'Angular',
+  'Ember',
+  'Knockout',
+  'Backbone',
+  'Vue'
+];
+
+function Frameworks() {
+  /*
+  React uses these keys to keep track of which 
+  items are added, changed, or removed. 
+  This helps make the re-rendering process 
+  more efficient when the list is modified in any way.
+
+  Note: Keys only need to be unique between sibling elements, 
+  they don't need to be globally unique in your application.
+  */
+  // using indexes for keys attr should be avoided as the position of elements may change
+  const renderFrameworks = frontEndFrameworks.map(el => <li key={el}>{el}</li>); 
+  return (
+    <div>
+      <h1>Popular Front End JavaScript Frameworks</h1>
+      <ul>
+        {renderFrameworks}
+      </ul>
+    </div>
+  );
+};
+ReactDOM.render(<Frameworks />, document.getElementById('Give_Sibling_Elements_a_Unique_Key_Attribute'));
+
+// ------------------------------------------------------------------
+
+class MyComponent10 extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      users: [
+        {
+          username: 'Jeff',
+          online: true
+        },
+        {
+          username: 'Alan',
+          online: false
+        },
+        {
+          username: 'Mary',
+          online: true
+        },
+        {
+          username: 'Jim',
+          online: false
+        },
+        {
+          username: 'Sara',
+          online: true
+        },
+        {
+          username: 'Laura',
+          online: true
+        }
+      ]
+    };
+  }
+  render() {
+    const usersOnline = this.state.users.filter(el => el.online); 
+    const renderOnline = usersOnline.map(el => <li key={el.username}>{el.username}</li>); 
+    return (
+      <div>
+        <h1>Current Online Users:</h1>
+        <ul>{renderOnline}</ul>
+      </div>
+    );
+  }
+}
+ReactDOM.render(<MyComponent10 />, document.getElementById('Use_Array.filter()_to_Dynamically_Filter_an_Array'));
+
+// ------------------------------------------------------------------
+
+class App1 extends React.Component {
+  // constructor(props) {
+  //   super(props);
+  // }
+  render() {
+    return <div/>
+  }
+};
+/*
+So far, you have been rendering React components on the client. 
+Normally, this is what you will always do. However, 
+there are some use cases where it makes sense to render 
+a React component on the server. Since React is a JavaScript 
+view library and you can run JavaScript on the server with Node, 
+this is possible. In fact, React provides a renderToString() 
+method you can use for this purpose.
+There are two key reasons why rendering on the server may 
+be used in a real world app. First, without doing this, 
+your React apps would consist of a relatively empty HTML 
+file and a large bundle of JavaScript when it's initially 
+loaded to the browser. This may not be ideal for search engines 
+that are trying to index the content of your pages so people can find you. 
+If you render the initial HTML markup on the server and 
+send this to the client, the initial page load contains 
+all of the page's markup which can be crawled by search engines. 
+Second, this creates a faster initial page load experience 
+because the rendered HTML is smaller than the JavaScript code 
+of the entire app. React will still be able to recognize 
+your app and manage it after the initial load.
+*/
+ReactDOMServer.renderToString(<App1 />);
